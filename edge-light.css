@@ -1,0 +1,20 @@
+:root[data-edge-light-active]::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  pointer-events: none !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(var(--edge-light-rgb), 0.9),
+    inset 0 0 18px 5px rgba(var(--edge-light-rgb), 0.65),
+    inset 0 0 55px 15px rgba(var(--edge-light-rgb), 0.28) !important;
+  animation: edge-light-pulse 3.5s ease-in-out infinite !important;
+}
+
+@keyframes edge-light-pulse {
+  50% { opacity: 0.72; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-edge-light-active]::after { animation: none !important; }
+}

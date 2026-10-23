@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge Light</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="identity"><span class="mark" aria-hidden="true"></span><h1>Edge Light</h1></div>
+      <p>Світіння для вибраних сайтів</p>
+    </header>
+
+    <div class="preview" aria-hidden="true"><span>Ваш браузер</span></div>
+
+    <section aria-labelledby="sites-title">
+      <h2 id="sites-title">Сайти <span id="site-count"></span></h2>
+      <ul id="site-list"></ul>
+    </section>
+
+    <form id="add-site-form">
+      <label for="site-url">Додати сайт</label>
+      <div class="add-controls">
+        <input id="site-url" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="example.com" required>
+        <label class="new-color" for="site-color" title="Колір світіння"><span class="sr-only">Колір світіння</span><input id="site-color" type="color" value="#49ff89"></label>
+        <button type="submit" class="add-button">Додати</button>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+</body>
+</html>
