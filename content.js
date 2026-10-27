@@ -2,28 +2,65 @@ const defaultSites = [
   { origin: "https://www.apple.com", color: "#49ff89" }
 ];
 
-function applySites(sites) {
-  const site = sites.find((entry) => entry.origin === location.origin);
-  const root = document.documentElement;
-  if (!root) return;
+let sites = defaultSites;
+let mode = "edge";
+let pointerGlow;
 
-  if (!site || !/^#[0-9a-f]{6}$/i.test(site.color)) {
-    root.removeAttribute("data-edge-light-active");
-    root.style.removeProperty("--edge-light-rgb");
-    return;
-  }
-
-  const rgb = [1, 3, 5].map((offset) => parseInt(site.color.slice(offset, offset + 2), 16));
-  root.style.setProperty("--edge-light-rgb", rgb.join(", "));
-  root.setAttribute("data-edge-light-active", "");
+function hidePointer() {
+  pointerGlow?.removeAttribute("data-visible");
 }
 
-chrome.storage.local.get("sites").then(({ sites }) => {
-  applySites(Array.isArray(sites) ? sites : defaultSites);
+function movePointer(event) {
+  if (!pointerGlow) return;
+  if (event.buttons) { hidePointer(); return; }
+  pointerGlow.style.setProperty("--edge-light-x", `${event.clientX}px`);
+  pointerGlow.style.setProperty("--edge-light-y", `${event.clientY}px`);
+  pointerGlow.setAttribute("data-visible", "");
+}
+
+function render() {
+  const root = document.documentElement;
+  const site = sites.find((entry) => entry.origin === location.origin);
+  const active = site && /^#[0-9a-f]{6}$/i.test(site.color);
+
+  root.toggleAttribute("data-edge-light-active", Boolean(active));
+  root.setAttribute("data-light-mode", mode);
+  if (active) {
+    const rgb = [1, 3, 5].map((offset) => parseInt(site.color.slice(offset, offset + 2), 16));
+    root.style.setProperty("--edge-light-rgb", rgb.join(", "));
+  } else {
+    root.style.removeProperty("--edge-light-rgb");
+  }
+
+  if (active && mode === "pointer") {
+    if (!pointerGlow) {
+      pointerGlow = document.createElement("div");
+      pointerGlow.id = "edge-light-pointer-glow";
+      pointerGlow.setAttribute("aria-hidden", "true");
+      root.append(pointerGlow);
+    }
+  } else {
+    pointerGlow?.remove();
+    pointerGlow = null;
+  }
+  hidePointer();
+}
+
+window.addEventListener("pointermove", movePointer, { capture: true, passive: true });
+window.addEventListener("pointerdown", hidePointer, { capture: true, passive: true });
+window.addEventListener("pointerup", movePointer, { capture: true, passive: true });
+document.addEventListener("mouseleave", hidePointer);
+window.addEventListener("blur", hidePointer);
+
+chrome.storage.local.get(["sites", "mode"]).then((saved) => {
+  sites = Array.isArray(saved.sites) ? saved.sites : defaultSites;
+  mode = saved.mode === "pointer" ? "pointer" : "edge";
+  render();
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.sites) {
-    applySites(Array.isArray(changes.sites.newValue) ? changes.sites.newValue : defaultSites);
-  }
+  if (area !== "local") return;
+  if (changes.sites) sites = Array.isArray(changes.sites.newValue) ? changes.sites.newValue : defaultSites;
+  if (changes.mode) mode = changes.mode.newValue === "pointer" ? "pointer" : "edge";
+  if (changes.sites || changes.mode) render();
 });

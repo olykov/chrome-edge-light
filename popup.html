@@ -16,6 +16,15 @@
 
     <div class="preview" aria-hidden="true"><span>Ваш браузер</span></div>
 
+    <fieldset class="mode-picker">
+      <legend>Режим світіння</legend>
+      <div class="mode-options">
+        <label><input type="radio" name="mode" value="edge" checked><span>По краю</span></label>
+        <label><input type="radio" name="mode" value="pointer"><span>Біля курсора</span></label>
+      </div>
+      <p id="mode-description">М’яка підсвітка країв сторінки.</p>
+    </fieldset>
+
     <section aria-labelledby="sites-title">
       <h2 id="sites-title">Сайти <span id="site-count"></span></h2>
       <ul id="site-list"></ul>

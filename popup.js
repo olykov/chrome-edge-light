@@ -8,7 +8,33 @@ const urlInput = document.querySelector("#site-url");
 const colorInput = document.querySelector("#site-color");
 const status = document.querySelector("#status");
 const preview = document.querySelector(".preview");
+const modeInputs = document.querySelectorAll('input[name="mode"]');
+const modeDescription = document.querySelector("#mode-description");
 let sites = [];
+
+function showMode(mode) {
+  const selected = mode === "pointer" ? "pointer" : "edge";
+  document.querySelector(`input[name="mode"][value="${selected}"]`).checked = true;
+  preview.dataset.mode = selected;
+  modeDescription.textContent = selected === "pointer"
+    ? "Світіння рухається за курсором і згасає під час натискання."
+    : "М’яка підсвітка країв сторінки.";
+}
+
+for (const input of modeInputs) {
+  input.addEventListener("change", async () => {
+    if (!input.checked) return;
+    try {
+      await chrome.storage.local.set({ mode: input.value });
+      showMode(input.value);
+      setStatus("Режим збережено.");
+    } catch {
+      const { mode } = await chrome.storage.local.get("mode");
+      showMode(mode);
+      setStatus("Не вдалося зберегти режим.", true);
+    }
+  });
+}
 
 function setStatus(message, error = false) {
   status.textContent = message;
@@ -155,7 +181,8 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-chrome.storage.local.get("sites").then(({ sites: saved }) => {
+chrome.storage.local.get(["sites", "mode"]).then(({ sites: saved, mode }) => {
   sites = Array.isArray(saved) ? saved : defaultSites.map((site) => ({ ...site }));
   render();
+  showMode(mode);
 });

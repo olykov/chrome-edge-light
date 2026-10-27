@@ -1,4 +1,4 @@
-:root[data-edge-light-active]::after {
+:root[data-edge-light-active][data-light-mode="edge"]::after {
   content: "" !important;
   position: fixed !important;
   inset: 0 !important;
@@ -11,10 +11,31 @@
   animation: edge-light-pulse 3.5s ease-in-out infinite !important;
 }
 
+#edge-light-pointer-glow {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 280px !important;
+  height: 280px !important;
+  z-index: 2147483647 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  transform: translate3d(calc(var(--edge-light-x) - 50%), calc(var(--edge-light-y) - 50%), 0) !important;
+  background: radial-gradient(circle,
+    transparent 0 20px,
+    rgba(var(--edge-light-rgb), .14) 45px,
+    rgba(var(--edge-light-rgb), .30) 75px,
+    rgba(var(--edge-light-rgb), .10) 110px,
+    transparent 140px) !important;
+  opacity: 0 !important;
+}
+
+#edge-light-pointer-glow[data-visible] { opacity: 1 !important; }
+
 @keyframes edge-light-pulse {
   50% { opacity: 0.72; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-edge-light-active]::after { animation: none !important; }
+  :root[data-edge-light-active][data-light-mode="edge"]::after { animation: none !important; }
 }

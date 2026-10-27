@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Edge Light",
-  "version": "1.3.0",
-  "description": "Custom edge glow for selected websites.",
+  "version": "1.4.0",
+  "description": "Custom edge or pointer glow for selected websites.",
   "permissions": ["storage", "scripting"],
   "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "background": { "service_worker": "background.js" },
   "action": { "default_popup": "popup.html" },
   "options_ui": { "page": "permission.html", "open_in_tab": true },
   "content_scripts": [
